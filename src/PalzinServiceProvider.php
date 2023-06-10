@@ -85,7 +85,7 @@ class PalzinServiceProvider extends ServiceProvider
         $this->mergeConfigFrom(__DIR__ . '/../config/palzinapm.php', 'palzinapm');
 
         // Bind Palzin service class
-        $this->app->singleton('palzin', function ($app) {
+        $this->app->singleton('palzinapm', function ($app) {
             $configuration = (new Configuration(config('palzinapm.key')))
                 ->setEnabled(config('palzinapm.enable', true))
                 ->setUrl(config('palzinapm.url'))
