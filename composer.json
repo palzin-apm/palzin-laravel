@@ -1,0 +1,52 @@
+{
+    "name": "palzin-apm/palzin-laravel",
+    "description": "Monitoring package",
+    "keywords": ["monitoring", "php", "palzin", "laravel", "apm", "bugmanager"],
+    "license": "MIT",
+    "authors": [{
+        "name": "Palzin Team",
+        "email": "hello@palzin.app"
+    }],
+    "require": {
+        "php": ">=7.2|^8.0",
+        "illuminate/console": "^5.5|^6.0|^7.0|^8.0|^9.0|^10.0",
+        "illuminate/contracts": "^5.5|^6.0|^7.0|^8.0|^9.0|^10.0",
+        "illuminate/support": "^5.5|^6.0|^7.0|^8.0|^9.0|^10.0",
+        "palzin/palzin-php": "^23.03.08",
+        "guzzlehttp/guzzle": "^5.0 || ^6.0 || ^7.0",
+        "vlucas/phpdotenv": "^2.0 || ^3.0 || ^4.0 || ^5.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Palzin\\Laravel\\": "src/"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "config": {
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require-dev": {
+        "orchestra/testbench": "^6.3|^7.0|^8.0",
+        "nunomaduro/collision": "^6.1"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Palzin\\Laravel\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {},
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Palzin\\Laravel\\PalzinServiceProvider"
+            ],
+            "aliases": {
+                "Palzin": "Palzin\\Laravel\\Facades\\Palzin"
+            }
+        }
+    }
+}
