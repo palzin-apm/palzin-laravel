@@ -63,7 +63,7 @@ class PalzinServiceProvider extends ServiceProvider
         if ($this->app instanceof LaravelApplication && $this->app->runningInConsole()) {
             $this->publishes([__DIR__ . '/../config/palzinapm.php' => config_path('palzinapm.php')]);
         } elseif ($this->app instanceof LumenApplication) {
-            $this->app->configure('palzinapm');
+            $this->app->configure('palzin');
         }
         $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
 
@@ -82,10 +82,10 @@ class PalzinServiceProvider extends ServiceProvider
     public function register()
     {
         // Default package configuration
-        $this->mergeConfigFrom(__DIR__ . '/../config/palzinapm.php', 'palzinapm');
+        $this->mergeConfigFrom(__DIR__ . '/../config/palzinapm.php', 'palzin');
 
         // Bind Palzin service class
-        $this->app->singleton('palzinapm', function ($app) {
+        $this->app->singleton('palzin', function ($app) {
             $configuration = (new Configuration(config('palzinapm.key')))
                 ->setEnabled(config('palzinapm.enable', true))
                 ->setUrl(config('palzinapm.url'))
