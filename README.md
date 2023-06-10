@@ -54,7 +54,7 @@ You can obtain an `PALZIN_APM_INGESTION_KEY` creating a new project in your [Pal
 
 ### Attach the Middleware
 
-To monitor web requests you can attach the `WebMonitoringMiddleware` in your http kernel or use in one or more route groups based on your personal needs.
+To monitor web requests you can attach the `WebRequestMonitoring` in your http kernel or use in one or more route groups based on your personal needs.
 
 ```php
 /**
