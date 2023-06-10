@@ -22,7 +22,7 @@ class TestCommand extends Command
      *
      * @var string
      */
-    protected $description = 'Send data to your Palzin dashboard.';
+    protected $description = 'Send data to your Palzin Monitor (APM) dashboard.';
 
     /**
      * Execute the console command.
@@ -34,11 +34,11 @@ class TestCommand extends Command
     public function handle(Repository $config)
     {
         if (!palzin()->isRecording()) {
-            $this->warn('Palzin is not enabled');
+            $this->warn('Palzin Monitor (APM) ingestion is not enabled');
             return;
         }
 
-        $this->line("I'm testing your Palzin integration.");
+        $this->line("I'm testing your Palzin Monitor (APM) integration.");
 
 
         try {
@@ -52,22 +52,22 @@ class TestCommand extends Command
             usleep(10 * 1000);
 
             !empty($config->get('palzin.key'))
-                ? $this->info('✅ Palzin key installed.')
-                : $this->warn('❌ Palzin key not specified. Make sure you specify the PALZIN_APM_INGESTION_KEY in your .env file.');
+                ? $this->info('✅ Palzin Monitor (APM) ingestion key installed.')
+                : $this->warn('❌ Palzin Monitor (APM) ingestion key not specified. Make sure you specify the PALZIN_APM_INGESTION_KEY in your .env file.');
 
             $segment->addContext('example payload', ['key' => $config->get('palzin.key')]);
-        }, 'test', 'Check Ingestion key');
+        }, 'test', 'Check Palzin Monitor (APM) Ingestion key');
 
         // Check Palzin is enabled
         palzin()->addSegment(function ($segment) use ($config) {
             usleep(10 * 1000);
 
             $config->get('palzin.enable')
-                ? $this->info('✅ Palzin is enabled.')
-                : $this->warn('❌ Palzin is actually disabled, turn to true the `enable` field of the `palzin` config file.');
+                ? $this->info('✅ Palzin Monitor (APM) is enabled.')
+                : $this->warn('❌ Palzin Monitor (APM) is actually disabled, turn to true the `enable` field of the `palzin-apm` config file.');
 
             $segment->addContext('another payload', ['enable' => $config->get('palzin.enable')]);
-        }, 'test', 'Check if Palzin is enabled');
+        }, 'test', 'Check if Palzin Monitor (APM) is enabled');
 
         // Check CURL
         palzin()->addSegment(function ($segment) use ($config) {
@@ -75,20 +75,20 @@ class TestCommand extends Command
 
             function_exists('curl_version')
                 ? $this->info('✅ CURL extension is enabled.')
-                : $this->warn('❌ CURL is actually disabled so your app could not be able to send data to Palzin.');
+                : $this->warn('❌ CURL is actually disabled so your app could not be able to send data to Palzin Monitor (APM).');
 
             $segment->addContext('another payload', ['foo' => 'bar']);
         }, 'test', 'Check CURL extension');
 
         // Report Exception
-        palzin()->reportException(new \Exception('First Exception detected'));
+        palzin()->reportException(new \Exception('First Exception detected using Palzin Monitor (APM)'));
         // End the transaction
         palzin()->currentTransaction()
             ->setResult('success')
             ->end();
 
         // Demo data
-        Log::debug("Here you'll find log entries generated during the transaction.");
+        Log::debug("In this section, you can access the log entries that were created throughout the transaction.");
 
         /*
          * Loading demo data
@@ -97,14 +97,14 @@ class TestCommand extends Command
 
 
         foreach ([1, 2, 3, 4, 5, 6] as $minutes) {
-            palzin()->startTransaction("Other transactions")
+            palzin()->startTransaction("Other sample transactions")
                 ->start(microtime(true) - 60*$minutes)
                 ->setResult('success')
                 ->end(rand(100, 200));
 
 
             // Logs will be reported in the transaction context.
-            Log::debug("Here you'll find log entries generated during the transaction.");
+            Log::debug("In this section, you can access the log entries that were created throughout the transaction.");
         }
 
         $this->line('Done!');
