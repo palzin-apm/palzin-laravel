@@ -61,7 +61,7 @@ class PalzinServiceProvider extends ServiceProvider
     protected function setupConfigFile()
     {
         if ($this->app instanceof LaravelApplication && $this->app->runningInConsole()) {
-            $this->publishes([__DIR__ . '/../config/palzinapm.php' => config_path('palzinapm.php')]);
+            $this->publishes([__DIR__ . '/../config/palzin-apm.php' => config_path('palzin-apm.php')]);
         } elseif ($this->app instanceof LumenApplication) {
             $this->app->configure('palzin');
         }
@@ -82,17 +82,17 @@ class PalzinServiceProvider extends ServiceProvider
     public function register()
     {
         // Default package configuration
-        $this->mergeConfigFrom(__DIR__ . '/../config/palzinapm.php', 'palzin');
+        $this->mergeConfigFrom(__DIR__ . '/../config/palzin-apm.php', 'palzin');
 
         // Bind Palzin service class
         $this->app->singleton('palzin', function ($app) {
-            $configuration = (new Configuration(config('palzinapm.key')))
-                ->setEnabled(config('palzinapm.enable', true))
-                ->setUrl(config('palzinapm.url'))
+            $configuration = (new Configuration(config('palzin-apm.key')))
+                ->setEnabled(config('palzin-apm.enable', true))
+                ->setUrl(config('palzin-apm.url', 'https://demo.palzin.app'))
                 ->setVersion(self::VERSION)
-                ->setTransport(config('palzinapm.transport', 'async'))
-                ->setOptions(config('palzinapm.options', []))
-                ->setMaxItems(config('palzinapm.max_items', 100));
+                ->setTransport(config('palzin-apm.transport', 'async'))
+                ->setOptions(config('palzin-apm.options', []))
+                ->setMaxItems(config('palzin-apm.max_items', 100));
 
             return new Palzin($configuration);
         });
@@ -150,33 +150,33 @@ class PalzinServiceProvider extends ServiceProvider
         $this->app->register(GateServiceProvider::class);
 
         // For Laravel >=6
-        if (config('palzinapm.redis', true) && substr(app()->version(), 0, 1) > 5) {
+        if (config('palzin-apm.redis', true) && substr(app()->version(), 0, 1) > 5) {
             $this->app->register(RedisServiceProvider::class);
         }
 
-        if (config('palzinapm.unhandled_exceptions', true)) {
+        if (config('palzin-apm.unhandled_exceptions', true)) {
             $this->app->register(ExceptionServiceProvider::class);
         }
 
-        if(config('palzinapm.query', true)){
+        if(config('palzin-apm.query', true)){
             $this->app->register(DatabaseQueryServiceProvider::class);
         }
 
-        if (config('palzinapm.job', true)) {
+        if (config('palzin-apm.job', true)) {
             $this->app->register(JobServiceProvider::class);
         }
 
-        if (config('palzinapm.email', true)) {
+        if (config('palzin-apm.email', true)) {
             $this->app->register(EmailServiceProvider::class);
         }
 
-        if (config('palzinapm.notifications', true)) {
+        if (config('palzin-apm.notifications', true)) {
             $this->app->register(NotificationServiceProvider::class);
         }
 
         // Compatibility with Laravel < 8.4
         if (
-            config('palzinapm.http_client', true) &&
+            config('palzin-apm.http_client', true) &&
             class_exists('\Illuminate\Http\Client\Events\RequestSending') &&
             class_exists('\Illuminate\Http\Client\Events\ResponseReceived')
         ) {
@@ -184,7 +184,7 @@ class PalzinServiceProvider extends ServiceProvider
         }
 
 
-        if (config('palzinapm.views')) {
+        if (config('palzin-apm.views')) {
             $this->bindViewEngine();
         }
     }
