@@ -17,12 +17,12 @@ class DisablingProvidersTest extends BasicTestCase
     {
         parent::resolveApplicationConfiguration($app);
 
-        $app['config']->set('palzin.job', false);
-        $app['config']->set('palzin.query', false);
-        $app['config']->set('palzin.email', false);
-        $app['config']->set('palzin.notifications', false);
-        $app['config']->set('palzin.unhandled_exceptions', false);
-        $app['config']->set('palzin.redis', false);
+        $app['config']->set('palzin-apm.job', false);
+        $app['config']->set('palzin-apm.query', false);
+        $app['config']->set('palzin-apm.email', false);
+        $app['config']->set('palzin-apm.notifications', false);
+        $app['config']->set('palzin-apm.unhandled_exceptions', false);
+        $app['config']->set('palzin-apm.redis', false);
     }
 
     public function testBindingDisabled()

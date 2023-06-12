@@ -51,7 +51,7 @@ return [
     |
     */
 
-    'url' => env('PALZIN_APM_URL', 'https://www.palzin.app'),
+    'url' => env('PALZIN_APM_URL', 'https://demo.palzin.app'),
 
     /*
     |--------------------------------------------------------------------------

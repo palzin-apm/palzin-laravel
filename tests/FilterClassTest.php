@@ -15,7 +15,7 @@ class FilterClassTest extends BasicTestCase
     public function testRequestApproved()
     {
         $this->app->router->get('test', function (Request $request) {
-            $this->assertTrue(Filters::isApprovedRequest(config('palzin.ignore_url'), $request));
+            $this->assertTrue(Filters::isApprovedRequest(config('palzin-apm.ignore_url'), $request));
         })->middleware(WebRequestMonitoring::class);
 
         $this->call('GET', 'test');
@@ -24,7 +24,7 @@ class FilterClassTest extends BasicTestCase
     public function testRequestNotApproved()
     {
         $this->app->router->get('nova', function (Request $request) {
-            $this->assertFalse(Filters::isApprovedRequest(config('palzin.ignore_url'), $request));
+            $this->assertFalse(Filters::isApprovedRequest(config('palzin-apm.ignore_url'), $request));
         })->middleware(WebRequestMonitoring::class);
 
         $this->call('GET', 'nova');
@@ -36,10 +36,10 @@ class FilterClassTest extends BasicTestCase
 
         $this->assertFalse(Filters::isApprovedJobClass(JobTest::class, $notAllowed));
 
-        $this->assertTrue(Filters::isApprovedJobClass(JobTest::class, config('palzin.ignore_jobs')));
+        $this->assertTrue(Filters::isApprovedJobClass(JobTest::class, config('palzin-apm.ignore_jobs')));
 
-        config()->set('palzin.ignore_jobs', $notAllowed);
+        config()->set('palzin-apm.ignore_jobs', $notAllowed);
 
-        $this->assertFalse(Filters::isApprovedJobClass(JobTest::class, config('palzin.ignore_jobs')));
+        $this->assertFalse(Filters::isApprovedJobClass(JobTest::class, config('palzin-apm.ignore_jobs')));
     }
 }

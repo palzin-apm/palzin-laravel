@@ -42,7 +42,7 @@ class DatabaseQueryServiceProvider extends ServiceProvider
             'query' => $sql,
         ];
 
-        if (config('palzin.bindings')) {
+        if (config('palzin-apm.bindings')) {
             $context['bindings'] = $bindings;
         }
 

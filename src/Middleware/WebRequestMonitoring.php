@@ -28,7 +28,7 @@ class WebRequestMonitoring implements TerminableInterface
         if (
             Palzin::needTransaction()
             &&
-            Filters::isApprovedRequest(config('palzin.ignore_url'), $request)
+            Filters::isApprovedRequest(config('palzin-apm.ignore_url'), $request)
             &&
             $this->shouldRecorded($request)
         ) {
@@ -60,7 +60,7 @@ class WebRequestMonitoring implements TerminableInterface
             $this->buildTransactionName($request)
         );
 
-        if (Auth::check() && config('palzin.user')) {
+        if (Auth::check() && config('palzin-apm.user')) {
             $transaction->withUser(
                 Auth::user()->getAuthIdentifier());
         }
@@ -79,7 +79,7 @@ class WebRequestMonitoring implements TerminableInterface
             Palzin::currentTransaction()
                 ->addContext('Request Body', Filters::hideParameters(
                     $request->request->all(),
-                    config('palzin.hidden_parameters')
+                    config('palzin-apm.hidden_parameters')
                 ))
                 ->addContext('Response', [
                     'status_code' => $response->getStatusCode(),

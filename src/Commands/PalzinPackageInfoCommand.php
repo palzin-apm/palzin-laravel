@@ -29,14 +29,14 @@ class PalzinPackageInfoCommand extends Command
     {
         parent::__construct();
 
-        $this->key = config('palzin.key');
+        $this->key = config('palzin-apm.key');
 
-        $this->enabled = config('palzin.package_enable');
+        $this->enabled = config('palzin-apm.package_enable');
 
         $this->route = (version_compare(app()->version(), '5.6.12') >= 0) ? \Illuminate\Support\Facades\URL::signedRoute('version-info') : route('version-info');
 
         $this->guzzle = new Client([
-            'base_uri'    =>  config('palzin.url') . '/api/1/package-info/store',
+            'base_uri'    =>  config('palzin-apm.url') . '/api/1/package-info/store',
             'http_errors' => false,
             'verify'      => false,
             'headers' 	  => [

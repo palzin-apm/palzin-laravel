@@ -157,6 +157,6 @@ class JobServiceProvider extends ServiceProvider
      */
     protected function shouldBeMonitored(string $job): bool
     {
-        return Filters::isApprovedJobClass($job, config('palzin.ignore_jobs')) && Palzin::isRecording();
+        return Filters::isApprovedJobClass($job, config('palzin-apm.ignore_jobs')) && Palzin::isRecording();
     }
 }

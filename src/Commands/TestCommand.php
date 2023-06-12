@@ -51,22 +51,22 @@ class TestCommand extends Command
         palzin()->addSegment(function ($segment) use ($config) {
             usleep(10 * 1000);
 
-            !empty($config->get('palzin.key'))
+            !empty($config->get('palzin-apm.key'))
                 ? $this->info('✅ Palzin Monitor (APM) ingestion key installed.')
                 : $this->warn('❌ Palzin Monitor (APM) ingestion key not specified. Make sure you specify the PALZIN_APM_INGESTION_KEY in your .env file.');
 
-            $segment->addContext('example payload', ['key' => $config->get('palzin.key')]);
+            $segment->addContext('example payload', ['key' => $config->get('palzin-apm.key')]);
         }, 'test', 'Check Palzin Monitor (APM) Ingestion key');
 
         // Check Palzin is enabled
         palzin()->addSegment(function ($segment) use ($config) {
             usleep(10 * 1000);
 
-            $config->get('palzin.enable')
+            $config->get('palzin-apm.enable')
                 ? $this->info('✅ Palzin Monitor (APM) is enabled.')
                 : $this->warn('❌ Palzin Monitor (APM) is actually disabled, turn to true the `enable` field of the `palzin-apm` config file.');
 
-            $segment->addContext('another payload', ['enable' => $config->get('palzin.enable')]);
+            $segment->addContext('another payload', ['enable' => $config->get('palzin-apm.enable')]);
         }, 'test', 'Check if Palzin Monitor (APM) is enabled');
 
         // Check CURL

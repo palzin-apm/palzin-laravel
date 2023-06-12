@@ -52,7 +52,7 @@ class HttpClientServiceProvider extends ServiceProvider
                         'status' => $event->response->status(),
                         'headers' => $event->response->headers(),
                         ],
-                        config('palzin.http_client_body') ? ['body' => $event->response->body()] : []
+                        config('palzin-apm.http_client_body') ? ['body' => $event->response->body()] : []
                     ))
                     ->label = $event->response->status() . ' ' . $event->request->method() . ' ' . $event->request->url();
             }
