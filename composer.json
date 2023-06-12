@@ -2,6 +2,7 @@
     "name": "palzin-apm/palzin-laravel",
     "description": "Real-Time monitoring Laravel package using Palzin Monitor (APM)",
     "keywords": ["monitoring", "php", "palzin", "laravel", "apm", "bugmanager"],
+    "homepage": "https://palzin.app",
     "license": "MIT",
     "authors": [{
         "name": "Palzin Team",

@@ -10,6 +10,8 @@ Palzin Monitor offers real-time performance monitoring capabilities that allow y
 - [Configure the Ingestion Key](#key)
 - [Middleware Setup](#middleware)
 - [Test everything is working](#test)
+- [Official Documentation](https://palzin.app/guides/laravel-introduction)
+- [License](#license)
 
 <a name="requirements"></a>
 
@@ -86,6 +88,12 @@ php artisan palzin:test
 
 Go to [https://www.palzin.app/](https://www.palzin.app/) to explore your data.
 
+<a name="doc"></a>
+## Official documentation
+
+**[Go to the official documentation](https://palzin.app/guides/symfony-introduction)**
+
+<a name="license"></a>
 ## LICENSE
 
 This package is licensed under the [MIT](LICENSE) license.
