@@ -107,7 +107,7 @@ class JobServiceProvider extends ServiceProvider
         if (array_key_exists($id, $this->segments)) {
             $this->segments[$id]->end();
         } else {
-            Palzin::currentTransaction()
+            Palzin::transaction()
                 ->setResult($failed ? 'failed' : 'success');
         }
 
