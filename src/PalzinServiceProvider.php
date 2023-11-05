@@ -11,7 +11,6 @@ use Illuminate\View\Engines\EngineResolver;
 use Illuminate\View\Factory as ViewFactory;
 use Palzin\Laravel\Commands\PublishCommand;
 use Palzin\Laravel\Commands\TestCommand;
-use Palzin\Laravel\Commands\PalzinPackageInfoCommand;
 use Palzin\Laravel\Providers\CommandServiceProvider;
 use Palzin\Laravel\Providers\DatabaseQueryServiceProvider;
 use Palzin\Laravel\Providers\EmailServiceProvider;
@@ -48,9 +47,7 @@ class PalzinServiceProvider extends ServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->commands([
-                TestCommand::class,
-                PalzinPackageInfoCommand::class
-
+                TestCommand::class
             ]);
         }
     }
