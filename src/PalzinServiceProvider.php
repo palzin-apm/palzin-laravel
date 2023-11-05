@@ -65,7 +65,7 @@ class PalzinServiceProvider extends ServiceProvider
         } elseif ($this->app instanceof LumenApplication) {
             $this->app->configure('palzin');
         }
-        $this->loadRoutesFrom(__DIR__.'/../routes/web.php');
+
 
         $this->app->booted(function () {
             $schedule = $this->app->make(Schedule::class);
