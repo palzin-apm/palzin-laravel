@@ -67,11 +67,6 @@ class PalzinServiceProvider extends ServiceProvider
         }
 
 
-        $this->app->booted(function () {
-            $schedule = $this->app->make(Schedule::class);
-            $schedule->command('palzin:package-info')->hourly();
-        });
-
     }
 
     /**
