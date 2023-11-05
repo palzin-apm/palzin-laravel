@@ -76,7 +76,7 @@ class WebRequestMonitoring implements TerminableInterface
     {
         if (Palzin::isRecording() && Palzin::hasTransaction()) {
 
-            Palzin::currentTransaction()
+            Palzin::transaction()
                 ->addContext('Request Body', Filters::hideParameters(
                     $request->request->all(),
                     config('palzin-apm.hidden_parameters')

@@ -13,7 +13,7 @@ class MiddlewareTest extends BasicTestCase
             ->middleware(WebRequestMonitoring::class);
         $this->get('test');
         $this->assertFalse(Palzin::needTransaction());
-        $this->assertInstanceOf(Transaction::class, Palzin::currentTransaction());
+        $this->assertInstanceOf(Transaction::class, Palzin::transaction());
     }
     public function testResult()
     {
@@ -23,9 +23,9 @@ class MiddlewareTest extends BasicTestCase
         $response = $this->get( 'test');
         $this->assertEquals(
             $response->getStatusCode(),
-            Palzin::currentTransaction()->result
+            Palzin::transaction()->result
         );
-        $this->assertArrayHasKey('Response', Palzin::currentTransaction()->context);
+        $this->assertArrayHasKey('Response', Palzin::transaction()->context);
     }
     public function testContext()
     {
@@ -33,7 +33,7 @@ class MiddlewareTest extends BasicTestCase
         $this->app->router->get('test', function () {})
             ->middleware(WebRequestMonitoring::class);
         $this->get( 'test');
-        $this->assertArrayHasKey('Request Body', Palzin::currentTransaction()->context);
-        $this->assertArrayHasKey('Response', Palzin::currentTransaction()->context);
+        $this->assertArrayHasKey('Request Body', Palzin::transaction()->context);
+        $this->assertArrayHasKey('Response', Palzin::transaction()->context);
     }
 }

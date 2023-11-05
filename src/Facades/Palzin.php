@@ -10,7 +10,7 @@ use Palzin\Models\Transaction;
 
 /**
  * @method Transaction startTransaction($name)
- * @method Transaction currentTransaction()
+ * @method Transaction transaction()
  * @method static bool needTransaction()
  * @method static bool hasTransaction()
  * @method static bool canAddSegments()

@@ -19,8 +19,6 @@ class ExceptionServiceProvider extends ServiceProvider
     public function boot()
     {
         if (class_exists(MessageLogged::class)) {
-            // starting from L5.4 MessageLogged event class was introduced
-            // https://github.com/laravel/framework/commit/57c82d095c356a0fe0f9381536afec768cdcc072
             $this->app['events']->listen(MessageLogged::class, function ($log) {
                 $this->handleExceptionLog($log->level, $log->message, $log->context);
             });
@@ -45,9 +43,9 @@ class ExceptionServiceProvider extends ServiceProvider
         }
 
         if (Palzin::isRecording() && Palzin::hasTransaction()) {
-            Palzin::currentTransaction()
+            Palzin::transaction()
                 ->addContext('logs', array_merge(
-                    Palzin::currentTransaction()->getContext()['logs'] ?? [],
+                    Palzin::transaction()->getContext()['logs'] ?? [],
                     [
                         compact('level', 'message')
                     ]
@@ -64,7 +62,7 @@ class ExceptionServiceProvider extends ServiceProvider
 
         $this->app['palzin']->reportException($exception, false);
 
-        $this->app['palzin']->currentTransaction()->setResult('error');
+        $this->app['palzin']->transaction()->setResult('error');
     }
 
     /**

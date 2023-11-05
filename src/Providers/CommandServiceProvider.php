@@ -48,8 +48,8 @@ class CommandServiceProvider extends ServiceProvider
             if (!$this->shouldBeMonitored($event->command)) {
                 return;
             }
-            if(Palzin::hasTransaction() && Palzin::currentTransaction()->name === $event->command) {
-                Palzin::currentTransaction()->setResult($event->exitCode === 0 ? 'success' : 'error');
+            if(Palzin::hasTransaction() && Palzin::transaction()->name === $event->command) {
+                Palzin::transaction()->setResult($event->exitCode === 0 ? 'success' : 'error');
             } elseif(array_key_exists($event->command, $this->segments)) {
                 $this->segments[$event->command]->end()->addContext('Command', [
                     'exit_code' => $event->exitCode,

@@ -83,7 +83,7 @@ class TestCommand extends Command
         // Report Exception
         palzin()->reportException(new \Exception('First Exception detected using Palzin Monitor (APM)'));
         // End the transaction
-        palzin()->currentTransaction()
+        palzin()->transaction()
             ->setResult('success')
             ->end();
 
