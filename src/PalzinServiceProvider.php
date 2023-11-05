@@ -34,7 +34,7 @@ class PalzinServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    const VERSION = '23.03.22';
+    const VERSION = '23.11.05';
 
     /**
      * Booting of services.

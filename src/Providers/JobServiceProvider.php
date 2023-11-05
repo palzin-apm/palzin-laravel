@@ -52,7 +52,7 @@ class JobServiceProvider extends ServiceProvider
         $this->app['events']->listen(
             JobProcessed::class,
             function (JobProcessed $event) {
-                if ($this->shouldBeMonitored($event->job->resolveName())) {
+                if ($this->shouldBeMonitored($event->job->resolveName()) && !$event->job->hasFailed()) {
                     $this->handleJobEnd($event->job);
                 }
             }
