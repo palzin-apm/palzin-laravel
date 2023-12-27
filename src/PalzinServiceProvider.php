@@ -50,6 +50,8 @@ class PalzinServiceProvider extends ServiceProvider
                 TestCommand::class
             ]);
         }
+
+        $this->mapPalzinApiRoutes();
     }
 
     /**
@@ -128,6 +130,19 @@ class PalzinServiceProvider extends ServiceProvider
         });
 
         return new ViewEngineDecorator($realEngine, $viewFactory);
+    }
+
+    private function mapPalzinApiRoutes()
+    {
+        Route::group(
+            [
+                'namespace' => '\Palzin\Laravel\Http\Controllers',
+                'prefix' => 'palzin-apm-api'
+            ],
+            function ($router) {
+                require __DIR__ . '/../routes/api.php';
+            }
+        );
     }
 
     /**

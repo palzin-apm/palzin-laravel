@@ -193,7 +193,16 @@ return [
     'http_client_body' => env('PALZIN_APM_HTTP_CLIENT_BODY', false),
 
 
+    /*
+        |--------------------------------------------------------------------------
+        | Report JS Errors
+        |--------------------------------------------------------------------------
+        |
+        | This parameter offers the ability to record JavaScript errors.
+        | You can specify either true or false value
+        */
 
+    'report_js_error' => env('PALZIN_APM_REPORT_JS_ERROR', false),
 
     /*
     |--------------------------------------------------------------------------
