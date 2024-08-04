@@ -43,7 +43,7 @@ class GateServiceProvider extends ServiceProvider
         if (Palzin::canAddSegments()) {
             $this->segments[
                 $this->generateUniqueKey($this->formatArguments($arguments))
-            ] = Palzin::startSegment('gate', 'Gate: '.$ability);
+            ] = Palzin::startSegment('gate', 'Gate::'.$ability);
         }
     }
 
@@ -94,7 +94,7 @@ class GateServiceProvider extends ServiceProvider
      */
     public function generateUniqueKey(array $data)
     {
-        return md5(json_encode($data));
+        return md5(serialize($data));
     }
 
     /**

@@ -4,11 +4,12 @@
 namespace Palzin\Laravel\Providers;
 
 
-
+use Illuminate\Queue\Events\JobExceptionOccurred;
 use Illuminate\Queue\Events\JobFailed;
 use Illuminate\Queue\Events\JobProcessed;
 use Illuminate\Queue\Events\JobProcessing;
 use Illuminate\Contracts\Queue\Job;
+use Illuminate\Queue\Events\JobReleasedAfterException;
 use Illuminate\Support\ServiceProvider;
 use Palzin\Laravel\Facades\Palzin;
 use Palzin\Laravel\Filters;
@@ -40,6 +41,9 @@ class JobServiceProvider extends ServiceProvider
         $this->app['events']->listen(
             JobProcessing::class,
             function (JobProcessing $event) {
+                if (config('palzin.enable') && !Palzin::isRecording()) {
+                    Palzin::startRecording();
+                }
 
                 if ($this->shouldBeMonitored($event->job->resolveName())) {
                     $this->handleJobStart($event->job);
@@ -50,19 +54,60 @@ class JobServiceProvider extends ServiceProvider
         );
 
         $this->app['events']->listen(
-            JobProcessed::class,
-            function (JobProcessed $event) {
-                if ($this->shouldBeMonitored($event->job->resolveName()) && !$event->job->hasFailed()) {
-                    $this->handleJobEnd($event->job);
+            JobExceptionOccurred::class,
+            function (JobExceptionOccurred $event) {
+                // An unhandled exception will be reported by the ExceptionServiceProvider in case of a sync execution.
+                if (Palzin::canAddSegments() && $event->job->getConnectionName() !== 'sync') {
+                    Palzin::reportException($event->exception, false);
                 }
             }
         );
 
         $this->app['events']->listen(
+            JobProcessed::class,
+            function (JobProcessed $event) {
+                if ($this->shouldBeMonitored($event->job->resolveName()) && Palzin::isRecording()) {
+                    $this->handleJobEnd($event->job);
+                }
+            }
+        );
+
+
+        // For Laravel >=9
+        if (version_compare(app()->version(), '9.0.0', '>=')) {
+            $this->app['events']->listen(
+                JobReleasedAfterException::class,
+                function (JobReleasedAfterException $event) {
+                    if ($this->shouldBeMonitored($event->job->resolveName()) && Palzin::isRecording()) {
+                        $this->handleJobEnd($event->job, true);
+                        // Laravel throws the current exception after raising the failed events.
+                        // So after flushing, we turn off the monitoring to avoid ExceptionServiceProvider will report
+                        // the exception again causing a new transaction to start.
+                        // We'll restart recording in the JobProcessing event at the start of the job lifecycle
+                        if ($event->job->getConnectionName() !== 'sync') {
+                            Palzin::stopRecording();
+                        }
+                    }
+                }
+            );
+        }
+
+        $this->app['events']->listen(
             JobFailed::class,
             function (JobFailed $event) {
-                if ($this->shouldBeMonitored($event->job->resolveName())) {
+                if ($this->shouldBeMonitored($event->job->resolveName()) && Palzin::isRecording()) {
+                    // JobExceptionOccurred event is called after JobFailed
+                    Palzin::reportException($event->exception, false);
+
                     $this->handleJobEnd($event->job, true);
+
+                    // Laravel throws the current exception after raising the failed events.
+                    // So after flushing, we turn off the monitoring to avoid ExceptionServiceProvider will report
+                    // the exception again causing a new transaction to start.
+                    // We'll restart recording in the JobProcessing event at the start of the job lifecycle
+                    if ($event->job->getConnectionName() !== 'sync') {
+                        Palzin::stopRecording();
+                    }
                 }
             }
         );
@@ -76,6 +121,7 @@ class JobServiceProvider extends ServiceProvider
 
         if (Palzin::needTransaction()) {
             Palzin::startTransaction($job->resolveName())
+                ->setType('job')
                 ->addContext('Payload', $job->payload());
         } elseif (Palzin::canAddSegments()) {
             $this->initializeSegment($job);
@@ -112,13 +158,10 @@ class JobServiceProvider extends ServiceProvider
         }
 
         // Flush immediately if the job is processed in a long-running process.
-        /*
-         * We do not have to flush if the application is using the sync driver.
-         * In that case the package consider the job as a segment.
-         * This can cause the "Undefined property: Palzin\Laravel\Palzin::$transaction" error.
-         *
-         */
-        if ($this->app->runningInConsole() && config('queue.default') !== 'sync') {
+        /* We do not have to flush if the application is using the sync driver.
+        * In that case, the package considers the job as a segment.
+        */
+        if ($job->getConnectionName() !== 'sync') {
             Palzin::flush();
         }
 
@@ -157,6 +200,6 @@ class JobServiceProvider extends ServiceProvider
      */
     protected function shouldBeMonitored(string $job): bool
     {
-        return Filters::isApprovedJobClass($job, config('palzin-apm.ignore_jobs')) && Palzin::isRecording();
+        return Filters::isApprovedJobClass($job, config('palzin-apm.ignore_jobs'));
     }
 }

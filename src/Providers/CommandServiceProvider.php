@@ -35,6 +35,7 @@ class CommandServiceProvider extends ServiceProvider
 
             if (Palzin::needTransaction()) {
                 Palzin::startTransaction($event->command)
+                    ->setType('command')
                     ->addContext('Command', [
                         'arguments' => $event->input->getArguments(),
                         'options' => $event->input->getOptions(),

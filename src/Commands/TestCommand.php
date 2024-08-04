@@ -7,6 +7,7 @@ namespace Palzin\Laravel\Commands;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Contracts\Config\Repository;
+use Palzin\Models\Segment;
 
 class TestCommand extends Command
 {
@@ -47,8 +48,13 @@ class TestCommand extends Command
             $this->warn("❌ proc_open function disabled.");
             return;
         }
+        if (!palzin()->isRecording()) {
+            $this->warn('Palzin is not enabled');
+            return;
+        }
+
         // Check Palzin API key
-        palzin()->addSegment(function ($segment) use ($config) {
+        palzin()->addSegment(function (Segment $segment) use ($config) {
             usleep(10 * 1000);
 
             !empty($config->get('palzin-apm.key'))
@@ -59,26 +65,29 @@ class TestCommand extends Command
         }, 'test', 'Check Palzin Monitor (APM) Ingestion key');
 
         // Check Palzin is enabled
-        palzin()->addSegment(function ($segment) use ($config) {
+        palzin()->addSegment(function (Segment $segment) use ($config) {
             usleep(10 * 1000);
 
             $config->get('palzin-apm.enable')
                 ? $this->info('✅ Palzin Monitor (APM) is enabled.')
                 : $this->warn('❌ Palzin Monitor (APM) is actually disabled, turn to true the `enable` field of the `palzin-apm` config file.');
 
-            $segment->addContext('another payload', ['enable' => $config->get('palzin-apm.enable')]);
+            $segment->addContext('another payload for example', ['enable' => $config->get('palzin-apm.enable')]);
         }, 'test', 'Check if Palzin Monitor (APM) is enabled');
 
         // Check CURL
-        palzin()->addSegment(function ($segment) use ($config) {
+        palzin()->addSegment(function (Segment $segment) use ($config) {
             usleep(10 * 1000);
 
             function_exists('curl_version')
                 ? $this->info('✅ CURL extension is enabled.')
                 : $this->warn('❌ CURL is actually disabled so your app could not be able to send data to Palzin Monitor (APM).');
 
-            $segment->addContext('another payload', ['foo' => 'bar']);
         }, 'test', 'Check CURL extension');
+
+        palzin()->addSegment(function () {
+            sleep(1);
+        }, 'mysql', "SELECT name, (SELECT COUNT(*) FROM orders WHERE user_id = users.id) AS order_count FROM users");
 
         // Report Exception
         palzin()->reportException(new \Exception('First Exception detected using Palzin Monitor (APM)'));
@@ -90,22 +99,7 @@ class TestCommand extends Command
         // Demo data
         Log::debug("In this section, you can access the log entries that were created throughout the transaction.");
 
-        /*
-         * Loading demo data
-         */
-        $this->line('Loading demo data...');
 
-
-        foreach ([1, 2, 3, 4, 5, 6] as $minutes) {
-            palzin()->startTransaction("Other sample transactions")
-                ->start(microtime(true) - 60*$minutes)
-                ->setResult('success')
-                ->end(rand(100, 200));
-
-
-            // Logs will be reported in the transaction context.
-            Log::debug("In this section, you can access the log entries that were created throughout the transaction.");
-        }
 
         $this->line('Done!');
     }

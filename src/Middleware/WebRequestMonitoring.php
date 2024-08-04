@@ -5,13 +5,14 @@ namespace Palzin\Laravel\Middleware;
 
 
 use Closure;
-use Symfony\Component\HttpFoundation\Request as TerminableRequest;
-use Symfony\Component\HttpFoundation\Response as TerminableResponse;
-use Illuminate\Http\Request;
 use Palzin\Laravel\Facades\Palzin;
 use Illuminate\Support\Facades\Auth;
 use Palzin\Laravel\Filters;
 use Symfony\Component\HttpKernel\TerminableInterface;
+use Palzin\Models\Transaction;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+
 
 class WebRequestMonitoring implements TerminableInterface
 {
@@ -58,35 +59,39 @@ class WebRequestMonitoring implements TerminableInterface
     {
         $transaction = Palzin::startTransaction(
             $this->buildTransactionName($request)
+        )->markAsRequest();
+
+        $transaction->addContext(
+            'Request Body',
+            Filters::hideParameters(
+                $request->request->all(),
+                config('palzin.hidden_parameters')
+            )
         );
 
-        if (Auth::check() && config('palzin-apm.user')) {
-            $transaction->withUser(
-                Auth::user()->getAuthIdentifier());
+        if (Auth::check() && config('palzin.user')) {
+            $transaction->withUser(Auth::user()->getAuthIdentifier());
         }
     }
 
     /**
      * Terminates a request/response cycle.
      *
-     * @param TerminableRequest $request
-     * @param TerminableResponse $response
+     * @param \Illuminate\Http\Request $request
+     * @param \Illuminate\Http\Response $response
      */
-    public function terminate(TerminableRequest $request, TerminableResponse $response)
+    public function terminate(Request $request, Response $response): void
     {
         if (Palzin::isRecording() && Palzin::hasTransaction()) {
 
             Palzin::transaction()
-                ->addContext('Request Body', Filters::hideParameters(
-                    $request->request->all(),
-                    config('palzin-apm.hidden_parameters')
-                ))
                 ->addContext('Response', [
                     'status_code' => $response->getStatusCode(),
                     'version' => $response->getProtocolVersion(),
                     'charset' => $response->getCharset(),
                     'headers' => $response->headers->all(),
                 ])
+                ->addContext('Response Body', json_encode($response->getContent(), true))
                 ->setResult($response->getStatusCode());
         }
     }

@@ -33,7 +33,7 @@ class PalzinServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    const VERSION = '23.11.05';
+    const VERSION = '24.8.1';
 
     /**
      * Booting of services.
@@ -45,11 +45,11 @@ class PalzinServiceProvider extends ServiceProvider
 
         $this->setupConfigFile();
 
-        if ($this->app->runningInConsole()) {
+
             $this->commands([
                 TestCommand::class
             ]);
-        }
+
 
         $this->mapPalzinApiRoutes();
     }
@@ -59,7 +59,7 @@ class PalzinServiceProvider extends ServiceProvider
      */
     protected function setupConfigFile()
     {
-        if ($this->app instanceof LaravelApplication && $this->app->runningInConsole()) {
+        if ($this->app instanceof LaravelApplication) {
             $this->publishes([__DIR__ . '/../config/palzin-apm.php' => config_path('palzin-apm.php')]);
         } elseif ($this->app instanceof LumenApplication) {
             $this->app->configure('palzin');

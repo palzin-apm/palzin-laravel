@@ -29,8 +29,17 @@ class ExceptionServiceProvider extends ServiceProvider
         }
     }
 
+    /**
+     * Attach the event to the current transaction.
+     *
+     * @param string $level
+     * @param mixed $message
+     * @param mixed $context
+     * @return void
+     */
     protected function handleExceptionLog($level, $message, $context)
     {
+
         if (
             isset($context['exception']) &&
             ($context['exception'] instanceof \Throwable)
@@ -42,7 +51,7 @@ class ExceptionServiceProvider extends ServiceProvider
             $this->reportException($message);
         }
 
-        if (Palzin::isRecording() && Palzin::hasTransaction()) {
+        if (Palzin::hasTransaction()) {
             Palzin::transaction()
                 ->addContext('logs', array_merge(
                     Palzin::transaction()->getContext()['logs'] ?? [],
@@ -56,13 +65,9 @@ class ExceptionServiceProvider extends ServiceProvider
 
     protected function reportException(\Throwable $exception)
     {
-        if (!Palzin::isRecording()) {
-            return;
-        }
+        Palzin::reportException($exception, false);
 
-        $this->app['palzin']->reportException($exception, false);
-
-        $this->app['palzin']->transaction()->setResult('error');
+        Palzin::transaction()->setResult('error');
     }
 
     /**

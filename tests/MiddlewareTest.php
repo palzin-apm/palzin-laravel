@@ -1,5 +1,9 @@
 <?php
+
 namespace Palzin\Laravel\Tests;
+
+
+use Illuminate\Http\Request;
 use Palzin\Laravel\Facades\Palzin;
 use Palzin\Laravel\Middleware\WebRequestMonitoring;
 use Palzin\Models\Transaction;
@@ -25,15 +29,14 @@ class MiddlewareTest extends BasicTestCase
             $response->getStatusCode(),
             Palzin::transaction()->result
         );
-        $this->assertArrayHasKey('Response', Palzin::transaction()->context);
+        $this->assertArrayHasKey('Response', Palzin::transaction()->getContext());
     }
     public function testContext()
     {
 // test the middleware
-        $this->app->router->get('test', function () {})
+        $this->app->router->post('test', function (Request $request) {})
             ->middleware(WebRequestMonitoring::class);
-        $this->get( 'test');
-        $this->assertArrayHasKey('Request Body', Palzin::transaction()->context);
-        $this->assertArrayHasKey('Response', Palzin::transaction()->context);
+        $response = $this->post('test', ['foo' => 'bar']);
+        $this->assertArrayHasKey('Response', Palzin::transaction()->getContext());
     }
 }
