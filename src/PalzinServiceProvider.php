@@ -9,7 +9,6 @@ use Illuminate\Support\ServiceProvider;
 use Illuminate\Foundation\Application as LaravelApplication;
 use Illuminate\View\Engines\EngineResolver;
 use Illuminate\View\Factory as ViewFactory;
-use Palzin\Laravel\Commands\PublishCommand;
 use Palzin\Laravel\Commands\TestCommand;
 use Palzin\Laravel\Providers\CommandServiceProvider;
 use Palzin\Laravel\Providers\DatabaseQueryServiceProvider;
@@ -50,8 +49,6 @@ class PalzinServiceProvider extends ServiceProvider
                 TestCommand::class
             ]);
 
-
-        $this->mapPalzinApiRoutes();
     }
 
     /**
@@ -132,19 +129,6 @@ class PalzinServiceProvider extends ServiceProvider
         return new ViewEngineDecorator($realEngine, $viewFactory);
     }
 
-    private function mapPalzinApiRoutes()
-    {
-        Route::group(
-            [
-                'namespace' => '\Palzin\Laravel\Http\Controllers',
-                'prefix' => 'palzin-apm-api'
-            ],
-            function ($router) {
-                require __DIR__ . '/../routes/api.php';
-            }
-        );
-    }
-
     /**
      * Bind Palzin service providers based on package configuration.
      */
@@ -157,9 +141,10 @@ class PalzinServiceProvider extends ServiceProvider
         $this->app->register(GateServiceProvider::class);
 
         // For Laravel >=6
-        if (config('palzin-apm.redis', true) && substr(app()->version(), 0, 1) > 5) {
+        if (config('palzin-apm.redis', true) && version_compare(app()->version(), '6.0.0', '>=')) {
             $this->app->register(RedisServiceProvider::class);
         }
+
 
         if (config('palzin-apm.unhandled_exceptions', true)) {
             $this->app->register(ExceptionServiceProvider::class);
