@@ -5,7 +5,6 @@ namespace Palzin\Laravel\Providers;
 
 
 use Illuminate\Log\Events\MessageLogged;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\ServiceProvider;
 use Palzin\Laravel\Facades\Palzin;
 
@@ -19,7 +18,7 @@ class ExceptionServiceProvider extends ServiceProvider
     public function boot()
     {
         if (class_exists(MessageLogged::class)) {
-            $this->app['events']->listen(MessageLogged::class, function ($log) {
+            $this->app['events']->listen(MessageLogged::class, function (MessageLogged $log) {
                 $this->handleExceptionLog($log->level, $log->message, $log->context);
             });
         } else {
@@ -44,11 +43,11 @@ class ExceptionServiceProvider extends ServiceProvider
             isset($context['exception']) &&
             ($context['exception'] instanceof \Throwable)
         ) {
-            $this->reportException($context['exception']);
+            return $this->reportException($context['exception']);
         }
 
         if ($message instanceof \Throwable) {
-            $this->reportException($message);
+            return $this->reportException($message);
         }
 
         if (Palzin::hasTransaction()) {
